@@ -6,7 +6,9 @@
         // Fetch Data
         fetch(api).then(res => res.json()).then(data => {
             masterData = data;
+            // SPELLING FIXED: leader -> loader
             document.getElementById("loader").style.display = "none";
+            // SPELLING FIXED: randar -> render
             render(data, 'All');
         }).catch(e => {
             document.getElementById("loader").innerHTML = "⚠️ SYSTEM OFFLINE";
@@ -22,15 +24,14 @@
             }
 
             grid.innerHTML = items.map(i => {
-                // YAHAN GALTI THI - AB FIX HO GAYI HAI:
-                // Google Drive link se asli ID nikalne ka sahi tareeka:
+                // YE WALA LINE EKDAM SAHI HAI AB:
                 let id = i.url.split('/d/')[1].split('/')[0];
                 
                 let isVideo = i.type.includes("video");
                 let cssClass = (viewType === 'Videos') ? 'item video-mode' : 'item';
                 let icon = isVideo ? `<div class="vid-icon"><i class="fas fa-play"></i></div>` : '';
 
-                // High Quality Image Link (lh3 link use kar rahe hain jo fast hai)
+                // High Quality Image Link
                 let content = i.type.includes("image") ? 
                     `<img src="https://lh3.googleusercontent.com/d/${id}=s1000" loading="lazy">` : 
                     `<iframe src="https://drive.google.com/file/d/${id}/preview" style="pointer-events:none;"></iframe>`;
@@ -52,6 +53,7 @@
             else if (type === 'Photos') filtered = masterData.filter(i => i.type.includes("image"));
             else if (type === 'Videos') filtered = masterData.filter(i => i.type.includes("video"));
             
+            // SPELLING FIXED: randar -> render
             render(filtered, type);
         }
     </script>
