@@ -1,118 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>SHAQUIB | VARANASI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <style>
-        :root { --bg: #000; --text: #fff; --gray: #262626; --gold: #D4AF37; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 80px; }
-
-        /* --- HEADER (ROYAL STYLE) --- */
-        header { 
-            padding: 20px; display: flex; align-items: center; gap: 20px; 
-            position: sticky; top: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); 
-            z-index: 100; border-bottom: 1px solid #1a1a1a; 
-        }
-        
-        .profile-pic { 
-            width: 85px; height: 85px; border-radius: 50%; padding: 3px;
-            /* Gold Gradient Border */
-            background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C); 
-            flex-shrink: 0;
-        }
-        .profile-pic img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; background: #111; }
-        
-        .info { flex: 1; }
-        .info h1 { 
-            font-family: 'Cinzel', serif; /* The Royal Font */
-            font-size: 20px; margin: 0; display: flex; align-items: center; gap: 6px; 
-            letter-spacing: 0.5px;
-            background: linear-gradient(to right, #fff, #e0e0e0);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        
-        .verified { color: #0095f6; font-size: 14px; margin-top: 2px; }
-        
-        .stats { margin-top: 8px; color: #aaa; font-size: 13px; display: flex; gap: 15px; }
-        .stats span { color: #fff; font-weight: 600; }
-        
-        .bio { color: #dbdbdb; font-size: 13px; margin-top: 8px; line-height: 1.4; }
-        .bio-highlight { color: var(--gold); font-weight: 600; }
-
-        /* --- GALLERY GRID --- */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 2px; }
-        
-        .item { position: relative; background: var(--gray); overflow: hidden; aspect-ratio: 1/1; cursor: pointer; }
-        
-        /* Video Mode (Reels Look - Taller) */
-        .item.video-mode { aspect-ratio: 9/16; } 
-
-        img, iframe { width: 100%; height: 100%; object-fit: cover; border: none; display: block; transition: opacity 0.3s; }
-        .item:active img { opacity: 0.7; }
-        
-        /* Video Icon Overlay */
-        .vid-icon { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 12px; text-shadow: 0 0 4px rgba(0,0,0,0.8); }
-
-        /* --- BOTTOM NAVIGATION (APP FEEL) --- */
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; background: #000; 
-            border-top: 1px solid #1a1a1a; display: flex; justify-content: space-around; 
-            padding: 12px 0 25px 0; z-index: 1000; 
-        }
-        .nav-item { 
-            background: none; border: none; color: #666; font-size: 24px; 
-            cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; 
-        }
-        .nav-item.active { color: #fff; transform: translateY(-2px); }
-        .nav-text { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
-
-        /* Loading Animation */
-        #loader { text-align: center; padding: 60px; color: #666; grid-column: 1 / -1; font-size: 12px; letter-spacing: 1px; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="profile-pic">
-            <img src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
-        </div>
-        <div class="info">
-            <h1>SHAQUIB VARANASI <i class="fas fa-certificate verified"></i></h1>
-            <div class="stats">
-                <span>∞</span> Memories Captured
-            </div>
-            <div class="bio">
-                <span class="bio-highlight">Cloud Server ☁️</span><br>
-                Official Archive • Est. 2026
-            </div>
-        </div>
-    </header>
-
-    <div class="grid" id="main-grid">
-        <div id="loader"><i class="fas fa-circle-notch fa-spin"></i> LOADING...</div>
-    </div>
-
-    <div class="bottom-nav">
-        <button class="nav-item active" onclick="filterType('All', this)">
-            <i class="fas fa-th"></i>
-            <span class="nav-text">ALL</span>
-        </button>
-        <button class="nav-item" onclick="filterType('Photos', this)">
-            <i class="far fa-image"></i>
-            <span class="nav-text">PHOTOS</span>
-        </button>
-        <button class="nav-item" onclick="filterType('Videos', this)">
-            <i class="fas fa-film"></i>
-            <span class="nav-text">VIDEOS</span>
-        </button>
-    </div>
-
     <script>
         // TERA FINAL SCRIPT URL
         const api = "https://script.google.com/macros/s/AKfycbySoqGHYF0Dxf8cOeCNHBsLZskTslawbOr9TTTGlVSwN5HheOwpZuRbjvFr3drskagCCw/exec";
@@ -130,21 +15,24 @@
         // Render Function
         function render(items, viewType) {
             const grid = document.getElementById("main-grid");
+            
+            if (items.length === 0) {
+                grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No photos found in folder</div>";
+                return;
+            }
+
             grid.innerHTML = items.map(i => {
-                let id = i.url.split('id=')[1];
-                let isVideo = i.type.includes("video"); // Checks if file is video
+                // YAHAN GALTI THI - AB FIX HO GAYI HAI:
+                // Google Drive link se asli ID nikalne ka sahi tareeka:
+                let id = i.url.split('/d/')[1].split('/')[0];
                 
-                // Logic: If 'Videos' tab is active, use tall 'video-mode'. 
-                // Also, if 'All' tab is active but the file IS a video, we can still keep it square to look uniform, 
-                // OR make it tall. Standard Insta feed keeps everything square in grid.
-                // Let's keep it clean: Only 'Videos' tab gets the Reels look.
-                
+                let isVideo = i.type.includes("video");
                 let cssClass = (viewType === 'Videos') ? 'item video-mode' : 'item';
                 let icon = isVideo ? `<div class="vid-icon"><i class="fas fa-play"></i></div>` : '';
 
-                // Content
+                // High Quality Image Link (lh3 link use kar rahe hain jo fast hai)
                 let content = i.type.includes("image") ? 
-                    `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s4000" loading="lazy">` : 
+                    `<img src="https://lh3.googleusercontent.com/d/${id}=s1000" loading="lazy">` : 
                     `<iframe src="https://drive.google.com/file/d/${id}/preview" style="pointer-events:none;"></iframe>`;
 
                 return `<div class="${cssClass}">
@@ -156,11 +44,9 @@
 
         // Filter Function
         function filterType(type, btn) {
-            // Button Active State
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            // Filtering Data
             let filtered = [];
             if(type === 'All') filtered = masterData;
             else if (type === 'Photos') filtered = masterData.filter(i => i.type.includes("image"));
@@ -169,5 +55,4 @@
             render(filtered, type);
         }
     </script>
-</body>
-</html>
+    
