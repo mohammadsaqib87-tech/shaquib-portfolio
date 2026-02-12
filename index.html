@@ -29,8 +29,13 @@
             z-index: 1; display: none;
             animation: spin 10s linear infinite;
         }
-        .profile-pic { width: 85px; height: 85px; border-radius: 50%; padding: 3px; background: #000; position: relative; z-index: 2; }
+
+        .profile-pic { 
+            width: 85px; height: 85px; border-radius: 50%; padding: 3px;
+            background: #000; position: relative; z-index: 2;
+        }
         .profile-pic img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #111; }
+        
         .edit-icon {
             position: absolute; bottom: 0; right: 0;
             background: var(--gold); color: #000; width: 26px; height: 26px;
@@ -70,7 +75,7 @@
         #modal-content img { width: 100%; height: auto; max-height: 90vh; object-fit: contain; }
         .video-wrapper { width: 100%; height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .video-wrapper iframe { width: 100%; height: 100%; border: none; z-index: 5; }
-        .hd-btn { margin-top: 15px; padding: 12px 24px; background: #fff; border: none; color: #000; border-radius: 25px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; z-index: 5003; box-shadow: 0 0 15px rgba(255,255,255,0.3); text-decoration: none; }
+        .hd-btn { margin-top: 15px; padding: 12px 24px; background: #fff; border: none; color: #000; border-radius: 25px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; z-index: 5003; }
         .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.8); font-size: 35px; background: rgba(0,0,0,0.3); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5001; }
         .prev-btn { left: 10px; } .next-btn { right: 10px; }
         #close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 30px; z-index: 5002; cursor: pointer; }
@@ -81,14 +86,9 @@
         .nav-item.active { color: #fff; transform: translateY(-2px); }
         .nav-text { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
         #loader { text-align: center; padding: 60px; color: #888; grid-column: 1 / -1; font-size: 12px; letter-spacing: 1px; }
-
-        /* NEW: UPLOAD OVERLAY */
-        #upload-status { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 10px 25px; border-radius: 30px; font-weight: bold; z-index: 9999; box-shadow: 0 0 20px rgba(212,175,55,0.4); font-size: 13px; }
     </style>
 </head>
 <body>
-
-    <div id="upload-status">🚀 UPLOADING TO CLOUD...</div>
 
     <div id="story-modal">
         <div class="story-progress-bar" id="story-progress"></div>
@@ -112,7 +112,7 @@
                 <img id="profile-image" src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
             </div>
             <input type="file" id="profile-upload" accept="image/*" style="display: none;">
-            <div class="edit-icon" onclick="event.stopPropagation(); checkPermission('profile')"><i class="fas fa-camera"></i></div>
+            <div class="edit-icon" onclick="event.stopPropagation(); checkPermission()"><i class="fas fa-camera"></i></div>
         </div>
         <div class="info">
             <h1>SHAQUIB VARANASI <i class="fas fa-certificate verified"></i></h1>
@@ -129,11 +129,9 @@
         <button class="nav-item active" onclick="filterType('All', this)">
             <i class="fas fa-th"></i><span class="nav-text">ALL</span>
         </button>
-        <button class="nav-item" onclick="checkPermission('gallery')">
-            <i class="fas fa-plus-circle" style="color:var(--gold)"></i><span class="nav-text" style="color:var(--gold)">UPLOAD</span>
+        <button class="nav-item" onclick="filterType('Photos', this)">
+            <i class="far fa-image"></i><span class="nav-text">PHOTOS</span>
         </button>
-        <input type="file" id="gallery-upload" style="display:none" onchange="handleAdminUpload(event)">
-        
         <button class="nav-item" onclick="filterType('Videos', this)">
             <i class="fas fa-film"></i><span class="nav-text">VIDEOS</span>
         </button>
@@ -150,63 +148,37 @@
         let currentStoryIndex = 0;
         let storyTimer;
 
-        // 1. PROFILE & UPLOAD
+        // PROFILE PHOTO LOGIC
         const savedProfilePic = localStorage.getItem("shaquibProfilePic");
         if (savedProfilePic) document.getElementById("profile-image").src = savedProfilePic;
 
-        function checkPermission(type) {
-            if (prompt("🔐 Enter PIN:") === "4881") {
-                if(type === 'profile') document.getElementById('profile-upload').click();
-                else document.getElementById('gallery-upload').click();
-            } else {
-                alert("❌ Wrong PIN!");
-            }
+        function checkPermission() {
+            if (prompt("🔐 Enter PIN:") === "4881") document.getElementById('profile-upload').click();
+            else alert("❌ Wrong PIN!");
         }
 
-        // DP Upload Logic
         document.getElementById('profile-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0]; if (!file) return;
-            uploadFile(file, true);
-        });
-
-        // Gallery Upload Logic
-        function handleAdminUpload(event) {
-            const file = event.target.files[0]; if (!file) return;
-            uploadFile(file, false);
-        }
-
-        // COMMON UPLOAD FUNCTION
-        function uploadFile(file, isDP) {
-            const status = document.getElementById('upload-status');
-            status.style.display = 'block';
-            
+            const file = e.target.files[0];
+            if (!file) return;
+            const img = document.getElementById("profile-image");
+            img.style.opacity = '0.5'; 
             const reader = new FileReader();
             reader.onload = function(event) {
                 fetch(api, {
-                    method: 'POST', 
-                    body: JSON.stringify({ 
-                        base64: event.target.result.split(',')[1], 
-                        mimeType: file.type,
-                        name: file.name
-                    })
+                    method: 'POST', body: JSON.stringify({ base64: event.target.result.split(',')[1], mimeType: file.type })
                 }).then(res => res.json()).then(data => {
-                    status.style.display = 'none';
                     if (data.status === "success") {
-                        if(isDP) {
-                            const newUrl = `https://drive.google.com/uc?export=view&id=${data.url.split('/d/')[1].split('/')[0]}`;
-                            document.getElementById("profile-image").src = newUrl;
-                            localStorage.setItem("shaquibProfilePic", newUrl);
-                        } else {
-                            alert("✅ Upload Success! Cloud updated.");
-                            location.reload(); 
-                        }
+                        const newUrl = `https://drive.google.com/uc?export=view&id=${data.url.split('/d/')[1].split('/')[0]}`;
+                        img.src = newUrl; img.style.opacity = '1';
+                        localStorage.setItem("shaquibProfilePic", newUrl);
+                        alert("Updated! 🎉");
                     }
-                }).catch(err => { alert("Error"); status.style.display = 'none'; });
+                }).catch(err => { alert("Error"); img.style.opacity = '1'; });
             };
             reader.readAsDataURL(file);
-        }
+        });
 
-        // 2. FETCH DATA
+        // FETCH DATA
         fetch(api).then(res => res.json()).then(data => {
             masterData = data;
             storyData = data.filter(i => i.folder === "Storyupdates");
@@ -219,12 +191,10 @@
             document.getElementById("loader").innerHTML = "⚠️ CHECK INTERNET";
         });
 
-        // 3. STORY SYSTEM
+        // STORY LOGIC
         function openStory() {
             if (storyData.length === 0) return; 
-            currentStoryIndex = 0;
-            document.getElementById('story-modal').style.display = 'flex';
-            playStory(0);
+            currentStoryIndex = 0; document.getElementById('story-modal').style.display = 'flex'; playStory(0);
         }
         function playStory(index) {
             if (index >= storyData.length) { closeStory(); return; }
@@ -242,8 +212,7 @@
             let id = item.url.includes("/d/") ? item.url.split('/d/')[1].split('/')[0] : item.url.split('id=')[1];
             box.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="color:#fff; font-size:30px;"></i>';
             if (item.type.includes("image")) {
-                let img = new Image();
-                img.src = `https://drive.google.com/thumbnail?id=${id}&sz=s0`;
+                let img = new Image(); img.src = `https://drive.google.com/thumbnail?id=${id}&sz=s0`;
                 img.onload = () => { box.innerHTML = ''; box.appendChild(img); startTimer(5000, index); };
             } else {
                 box.innerHTML = `<video autoplay playsinline src="https://drive.google.com/uc?export=download&id=${id}" style="width:100%"></video>`;
@@ -261,7 +230,7 @@
         function prevStory() { clearTimeout(storyTimer); if (currentStoryIndex !== 0) playStory(currentStoryIndex - 1); }
         function closeStory() { clearTimeout(storyTimer); document.getElementById('story-modal').style.display = 'none'; document.getElementById('story-content').innerHTML = ''; }
 
-        // 4. GALLERY LOGIC
+        // GALLERY LOGIC
         function render(items, viewType) {
             const grid = document.getElementById("main-grid");
             if (items.length === 0) { grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No items</div>"; return; }
@@ -290,8 +259,7 @@
         function changeMedia(direction) { currentIndex += direction; if (currentIndex >= currentViewData.length) currentIndex = 0; if (currentIndex < 0) currentIndex = currentViewData.length - 1; showMedia(currentIndex); }
         function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('modal-content').innerHTML = ''; }
         function filterType(type, btn) {
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active');
             let filtered = type === 'All' ? galleryData : galleryData.filter(i => i.type.includes(type === 'Photos' ? 'image' : 'video'));
             currentViewData = filtered; render(filtered, type);
         }
