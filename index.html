@@ -19,12 +19,21 @@
             position: sticky; top: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); 
             z-index: 100; border-bottom: 1px solid #1a1a1a; 
         }
+        
+        .profile-pic-container { position: relative; flex-shrink: 0; }
         .profile-pic { 
             width: 85px; height: 85px; border-radius: 50%; padding: 3px;
             background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C); 
-            flex-shrink: 0;
         }
         .profile-pic img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; background: #111; }
+        
+        .edit-icon {
+            position: absolute; bottom: 0; right: 0;
+            background: var(--gold); color: #000; width: 26px; height: 26px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; cursor: pointer; border: 2px solid #000; z-index: 10;
+        }
+
         .info { flex: 1; }
         .info h1 { 
             font-family: 'Cinzel', serif; font-size: 20px; margin: 0; display: flex; align-items: center; gap: 6px; 
@@ -40,41 +49,41 @@
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 2px; }
         .item { position: relative; background: var(--gray); overflow: hidden; aspect-ratio: 1/1; cursor: pointer; }
         .item.video-mode { aspect-ratio: 9/16; } 
-        
-        /* FIX: Grid items pointer-events none to allow click through, but Modal items will be auto */
-        img, iframe { width: 100%; height: 100%; object-fit: cover; border: none; display: block; pointer-events: none; }
-        
-        .item:active img { opacity: 0.7; }
+        img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .vid-icon { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 12px; text-shadow: 0 0 4px rgba(0,0,0,0.8); }
 
-        /* SWIPE MODAL (GALLERY) */
+        /* MODAL */
         #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 5000; align-items: center; justify-content: center;
             flex-direction: column;
         }
-        #modal-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
+        #modal-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; flex-direction: column; }
+        #modal-content img { width: 100%; height: auto; max-height: 90vh; object-fit: contain; }
         
-        /* FIX: ENABLE TOUCH FOR MODAL CONTENT */
-        #modal-content img { width: 100%; height: auto; max-height: 90vh; object-fit: contain; pointer-events: auto; }
-        #modal-content iframe { width: 100%; height: 80vh; border: none; pointer-events: auto; }
-        
-        /* Navigation Arrows */
+        /* IFRAME CONTAINER */
+        .video-wrapper { width: 100%; height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .video-wrapper iframe { width: 100%; height: 100%; border: none; z-index: 5; }
+
+        /* HD BUTTON */
+        .hd-btn {
+            margin-top: 15px; padding: 12px 24px; background: #fff; 
+            border: none; color: #000; border-radius: 25px;
+            font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: 0.2s; z-index: 5003; box-shadow: 0 0 15px rgba(255,255,255,0.3);
+            text-decoration: none;
+        }
+        .hd-btn:active { transform: scale(0.95); background: var(--gold); }
+
         .nav-btn {
             position: absolute; top: 50%; transform: translateY(-50%);
             color: rgba(255,255,255,0.8); font-size: 35px; background: rgba(0,0,0,0.3);
             width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 5001; user-select: none; transition: 0.2s;
+            cursor: pointer; z-index: 5001; user-select: none;
         }
-        .nav-btn:active { background: rgba(255,255,255,0.2); transform: translateY(-50%) scale(0.9); }
         .prev-btn { left: 10px; }
         .next-btn { right: 10px; }
-
-        #close-btn {
-            position: absolute; top: 20px; right: 20px; color: #fff; font-size: 30px; z-index: 5002;
-            background: rgba(0,0,0,0.5); width: 40px; height: 40px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-        }
+        #close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 30px; z-index: 5002; cursor: pointer; }
 
         /* BOTTOM NAV */
         .bottom-nav { 
@@ -98,18 +107,17 @@
     </div>
 
     <header>
-        <div class="profile-pic">
-            <img src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
+        <div class="profile-pic-container">
+            <div class="profile-pic">
+                <img id="profile-image" src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
+            </div>
+            <input type="file" id="profile-upload" accept="image/*" style="display: none;">
+            <div class="edit-icon" onclick="checkPermission()"><i class="fas fa-camera"></i></div>
         </div>
         <div class="info">
             <h1>SHAQUIB VARANASI <i class="fas fa-certificate verified"></i></h1>
-            <div class="stats">
-                <span>∞</span> Memories Captured
-            </div>
-            <div class="bio">
-                <span class="bio-highlight">Cloud Server ☁️</span><br>
-                Official Archive • Est. 2026
-            </div>
+            <div class="stats"><span>∞</span> Memories Captured</div>
+            <div class="bio"><span class="bio-highlight">Cloud Server ☁️</span><br>Official Archive • Est. 2026</div>
         </div>
     </header>
 
@@ -130,52 +138,78 @@
     </div>
 
     <script>
-        const api = "https://script.google.com/macros/s/AKfycbySoqGHYF0Dxf8cOeCNHBsLZskTslawbOr9TTTGlVSwN5HheOwpZuRbjvFr3drskagCCw/exec";
+        const api = "https://script.google.com/macros/s/AKfycbyS2Pnqv2XDaDL5Nxl_5qeQ3qdoVAgbV2mtPDCYXoC8sVR6jm0ztZ4hYYqzAocA5vYJSQ/exec";
+        
         let masterData = [];
         let currentViewData = [];
         let currentIndex = 0;
 
+        // 1. PROFILE PIC
+        const savedProfilePic = localStorage.getItem("shaquibProfilePic");
+        if (savedProfilePic) document.getElementById("profile-image").src = savedProfilePic;
+
+        function checkPermission() {
+            if (prompt("🔐 Enter PIN:") === "4881") document.getElementById('profile-upload').click();
+            else alert("❌ Wrong PIN!");
+        }
+
+        document.getElementById('profile-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const img = document.getElementById("profile-image");
+            img.style.opacity = '0.5'; 
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                fetch(api, {
+                    method: 'POST',
+                    body: JSON.stringify({ base64: event.target.result.split(',')[1], mimeType: file.type })
+                }).then(res => res.json()).then(data => {
+                    if (data.status === "success") {
+                        const newUrl = `https://drive.google.com/uc?export=view&id=${data.url.split('/d/')[1].split('/')[0]}`;
+                        img.src = newUrl; img.style.opacity = '1';
+                        localStorage.setItem("shaquibProfilePic", newUrl);
+                        alert("Updated! 🎉");
+                    }
+                }).catch(err => { alert("Error"); img.style.opacity = '1'; });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // 2. FETCH DATA
         fetch(api).then(res => res.json()).then(data => {
             masterData = data;
             currentViewData = data;
             document.getElementById("loader").style.display = "none";
             render(data, 'All');
         }).catch(e => {
-            document.getElementById("loader").innerHTML = "⚠️ SYSTEM OFFLINE";
+            document.getElementById("loader").innerHTML = "⚠️ CHECK INTERNET";
         });
 
         function render(items, viewType) {
             const grid = document.getElementById("main-grid");
             if (items.length === 0) {
-                grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No photos found</div>";
+                grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No items</div>";
                 return;
             }
 
             grid.innerHTML = items.map((i, index) => {
-                let id = "";
-                if (i.url.includes("/d/")) { id = i.url.split('/d/')[1].split('/')[0]; } 
-                else { id = i.url.split('id=')[1]; }
-                
+                let id = i.url.includes("/d/") ? i.url.split('/d/')[1].split('/')[0] : i.url.split('id=')[1];
                 let isVideo = i.type.includes("video");
                 let cssClass = (viewType === 'Videos') ? 'item video-mode' : 'item';
                 let icon = isVideo ? `<div class="vid-icon"><i class="fas fa-play"></i></div>` : '';
-
-                let content = i.type.includes("image") ? 
-                    `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s4000" loading="lazy">` : 
-                    `<iframe src="https://drive.google.com/file/d/${id}/preview"></iframe>`;
-
+                
                 return `<div class="${cssClass}" onclick="openModal(${index})">
-                    ${content}
+                    <img src="https://drive.google.com/thumbnail?id=${id}&sz=s400" loading="lazy">
                     ${icon}
                 </div>`;
             }).join('');
         }
 
-        // --- SWIPE & SCROLL LOGIC ---
+        // 3. MODAL (NO-FAIL PLAYER)
         function openModal(index) {
             currentIndex = index;
-            const modal = document.getElementById('modal');
-            modal.style.display = 'flex';
+            document.getElementById('modal').style.display = 'flex';
             showMedia(index);
         }
 
@@ -184,17 +218,24 @@
             if (!currentViewData[index]) return;
             
             const item = currentViewData[index];
-            let id = "";
-            if (item.url.includes("/d/")) { id = item.url.split('/d/')[1].split('/')[0]; } 
-            else { id = item.url.split('id=')[1]; }
+            let id = item.url.includes("/d/") ? item.url.split('/d/')[1].split('/')[0] : item.url.split('id=')[1];
 
             box.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="color:#fff; font-size:30px;"></i>';
 
             if (item.type.includes("image")) {
-                box.innerHTML = `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s5000">`;
+                let img = new Image();
+                img.src = `https://drive.google.com/thumbnail?id=${id}&sz=s0`;
+                img.onload = () => { box.innerHTML = ''; box.appendChild(img); };
             } else {
-                // Autoplay enabled, and pointer-events set to auto in CSS
-                box.innerHTML = `<iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe>`;
+                // FIXED VIDEO LOGIC + DOWNLOAD BUTTON
+                box.innerHTML = `
+                    <div class="video-wrapper">
+                        <iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe>
+                    </div>
+                    <a class="hd-btn" href="https://drive.google.com/file/d/${id}/view" target="_blank">
+                        <i class="fas fa-download"></i> PLAY FULL HD & DOWNLOAD
+                    </a>
+                `;
             }
         }
 
@@ -210,43 +251,27 @@
             document.getElementById('modal-content').innerHTML = '';
         }
 
-        // --- TOUCH SWIPE LOGIC ---
-        let touchstartX = 0;
-        let touchendX = 0;
-        
+        // SWIPE & KEYS
+        let touchstartX = 0, touchendX = 0;
         const modal = document.getElementById('modal');
-        modal.addEventListener('touchstart', e => {
-            touchstartX = e.changedTouches[0].screenX;
-        });
-
-        modal.addEventListener('touchend', e => {
-            touchendX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
+        modal.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; });
+        modal.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; 
             if (touchendX < touchstartX - 50) changeMedia(1);
             if (touchendX > touchstartX + 50) changeMedia(-1);
-        }
-
-        // Keyboard
-        document.addEventListener('keydown', function(event) {
-            if (document.getElementById('modal').style.display === 'flex') {
-                if (event.key === "ArrowLeft") changeMedia(-1);
-                if (event.key === "ArrowRight") changeMedia(1);
-                if (event.key === "Escape") closeModal();
+        });
+        
+        document.addEventListener('keydown', e => {
+            if (modal.style.display === 'flex') {
+                if (e.key === "ArrowLeft") changeMedia(-1);
+                if (e.key === "ArrowRight") changeMedia(1);
+                if (e.key === "Escape") closeModal();
             }
         });
 
         function filterType(type, btn) {
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
-            let filtered = [];
-            if(type === 'All') filtered = masterData;
-            else if (type === 'Photos') filtered = masterData.filter(i => i.type.includes("image"));
-            else if (type === 'Videos') filtered = masterData.filter(i => i.type.includes("video"));
-            
+            let filtered = type === 'All' ? masterData : masterData.filter(i => i.type.includes(type === 'Photos' ? 'image' : 'video'));
             currentViewData = filtered;
             render(filtered, type);
         }
