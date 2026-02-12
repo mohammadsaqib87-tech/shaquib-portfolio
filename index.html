@@ -2,181 +2,172 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shaquib | Personal Space</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SHAQUIB | VARANASI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        :root {
-            --apple-bg: #000000;
-            --apple-card: #1c1c1e;
-            --apple-text: #f5f5f7;
-            --apple-gray: #86868b;
-        }
+        :root { --bg: #000; --text: #fff; --gray: #262626; --gold: #D4AF37; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 80px; }
 
-        body {
-            background-color: var(--apple-bg);
-            color: var(--apple-text);
-            font-family: 'Inter', -apple-system, sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+        /* --- HEADER (ROYAL STYLE) --- */
+        header { 
+            padding: 20px; display: flex; align-items: center; gap: 20px; 
+            position: sticky; top: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); 
+            z-index: 100; border-bottom: 1px solid #1a1a1a; 
         }
+        
+        .profile-pic { 
+            width: 85px; height: 85px; border-radius: 50%; padding: 3px;
+            /* Gold Gradient Border */
+            background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C); 
+            flex-shrink: 0;
+        }
+        .profile-pic img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; background: #111; }
+        
+        .info { flex: 1; }
+        .info h1 { 
+            font-family: 'Cinzel', serif; /* The Royal Font */
+            font-size: 20px; margin: 0; display: flex; align-items: center; gap: 6px; 
+            letter-spacing: 0.5px;
+            background: linear-gradient(to right, #fff, #e0e0e0);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        .verified { color: #0095f6; font-size: 14px; margin-top: 2px; }
+        
+        .stats { margin-top: 8px; color: #aaa; font-size: 13px; display: flex; gap: 15px; }
+        .stats span { color: #fff; font-weight: 600; }
+        
+        .bio { color: #dbdbdb; font-size: 13px; margin-top: 8px; line-height: 1.4; }
+        .bio-highlight { color: var(--gold); font-weight: 600; }
 
-        /* Glassmorphism Navigation Bar */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 48px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-bottom: 0.5px solid #333;
-        }
+        /* --- GALLERY GRID --- */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 2px; }
+        
+        .item { position: relative; background: var(--gray); overflow: hidden; aspect-ratio: 1/1; cursor: pointer; }
+        
+        /* Video Mode (Reels Look - Taller) */
+        .item.video-mode { aspect-ratio: 9/16; } 
 
-        nav span {
-            font-size: 14px;
-            letter-spacing: 1px;
-            color: var(--apple-gray);
-        }
+        img, iframe { width: 100%; height: 100%; object-fit: cover; border: none; display: block; transition: opacity 0.3s; }
+        .item:active img { opacity: 0.7; }
+        
+        /* Video Icon Overlay */
+        .vid-icon { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 12px; text-shadow: 0 0 4px rgba(0,0,0,0.8); }
 
-        /* Hero Section */
-        header {
-            height: 80vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
+        /* --- BOTTOM NAVIGATION (APP FEEL) --- */
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; background: #000; 
+            border-top: 1px solid #1a1a1a; display: flex; justify-content: space-around; 
+            padding: 12px 0 25px 0; z-index: 1000; 
         }
+        .nav-item { 
+            background: none; border: none; color: #666; font-size: 24px; 
+            cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; 
+        }
+        .nav-item.active { color: #fff; transform: translateY(-2px); }
+        .nav-text { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
 
-        h1 {
-            font-size: 4rem;
-            font-weight: 900;
-            margin: 0;
-            background: linear-gradient(180deg, #fff 0%, #888 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -2px;
-        }
-
-        .tagline {
-            font-size: 1.5rem;
-            color: var(--apple-gray);
-            margin-top: 10px;
-            font-weight: 400;
-        }
-
-        /* Apple-Style Grid */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto 100px;
-            padding: 0 20px;
-        }
-
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        /* Card Design */
-        .card {
-            background: var(--apple-card);
-            border-radius: 22px;
-            overflow: hidden;
-            transition: transform 0.6s cubic-bezier(0.2, 1, 0.2, 1);
-            position: relative;
-        }
-
-        .card:hover {
-            transform: scale(1.03);
-        }
-
-        img, iframe {
-            width: 100%;
-            height: 450px;
-            object-fit: cover;
-            border: none;
-            display: block;
-        }
-
-        /* Section Heading */
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 40px;
-            text-align: left;
-        }
-
-        #loader {
-            text-align: center;
-            padding: 50px;
-            color: var(--apple-gray);
-            font-weight: 300;
-        }
-
-        footer {
-            padding: 60px 20px;
-            text-align: center;
-            background: #111;
-            color: var(--apple-gray);
-            font-size: 12px;
-        }
+        /* Loading Animation */
+        #loader { text-align: center; padding: 60px; color: #666; grid-column: 1 / -1; font-size: 12px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <span>SHAQUIB • VARANASI</span>
-    </nav>
-
     <header>
-        <h1>SHAQUIB</h1>
-        <p class="tagline">Personal Space. Redefined.</p>
+        <div class="profile-pic">
+            <img src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
+        </div>
+        <div class="info">
+            <h1>SHAQUIB VARANASI <i class="fas fa-certificate verified"></i></h1>
+            <div class="stats">
+                <span>∞</span> Memories Captured
+            </div>
+            <div class="bio">
+                <span class="bio-highlight">Cloud Server ☁️</span><br>
+                Official Archive • Est. 2026
+            </div>
+        </div>
     </header>
 
-    <div class="container">
-        <h2 class="section-title">Latest Creations</h2>
-        <div id="loader">Syncing with iCloud...</div>
-        <div class="gallery" id="data-box"></div>
+    <div class="grid" id="main-grid">
+        <div id="loader"><i class="fas fa-circle-notch fa-spin"></i> LOADING...</div>
     </div>
 
-    <footer>
-        Copyright &copy; 2026 SHAQUIB. All rights reserved.
-    </footer>
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="filterType('All', this)">
+            <i class="fas fa-th"></i>
+            <span class="nav-text">ALL</span>
+        </button>
+        <button class="nav-item" onclick="filterType('Photos', this)">
+            <i class="far fa-image"></i>
+            <span class="nav-text">PHOTOS</span>
+        </button>
+        <button class="nav-item" onclick="filterType('Videos', this)">
+            <i class="fas fa-film"></i>
+            <span class="nav-text">VIDEOS</span>
+        </button>
+    </div>
 
     <script>
-        // TERA LINK EK DAM SAHI HAI
-        const scriptURL = "https://script.google.com/macros/s/AKfycbwQF_NmB4q08yty-QjPm9UFlrKbNZBkzBPzgbNUG0Gq5yvirT7rU8q8YEfbQlwbrcJS/exec";
+        // TERA FINAL SCRIPT URL
+        const api = "https://script.google.com/macros/s/AKfycbySoqGHYF0Dxf8cOeCNHBsLZskTslawbOr9TTTGlVSwN5HheOwpZuRbjvFr3drskagCCw/exec";
+        let masterData = [];
 
-        fetch(scriptURL)
-        .then(res => res.json())
-        .then(data => {
+        // Fetch Data
+        fetch(api).then(res => res.json()).then(data => {
+            masterData = data;
             document.getElementById("loader").style.display = "none";
-            const box = document.getElementById("data-box");
-
-            data.forEach(item => {
-                let rawID = item.url.split('id=')[1]; 
-                let card = document.createElement("div");
-                card.className = "card";
-                
-                if (item.type.includes("image")) {
-                    card.innerHTML = `<img src="https://drive.google.com/thumbnail?id=${rawID}&sz=s4000">`;
-                } else {
-                    card.innerHTML = `<iframe src="https://drive.google.com/file/d/${rawID}/preview"></iframe>`;
-                }
-                box.appendChild(card);
-            });
-        })
-        .catch(err => { 
-            document.getElementById("loader").innerHTML = "❌ SYSTEM OFFLINE"; 
+            render(data, 'All');
+        }).catch(e => {
+            document.getElementById("loader").innerHTML = "⚠️ SYSTEM OFFLINE";
         });
+
+        // Render Function
+        function render(items, viewType) {
+            const grid = document.getElementById("main-grid");
+            grid.innerHTML = items.map(i => {
+                let id = i.url.split('id=')[1];
+                let isVideo = i.type.includes("video"); // Checks if file is video
+                
+                // Logic: If 'Videos' tab is active, use tall 'video-mode'. 
+                // Also, if 'All' tab is active but the file IS a video, we can still keep it square to look uniform, 
+                // OR make it tall. Standard Insta feed keeps everything square in grid.
+                // Let's keep it clean: Only 'Videos' tab gets the Reels look.
+                
+                let cssClass = (viewType === 'Videos') ? 'item video-mode' : 'item';
+                let icon = isVideo ? `<div class="vid-icon"><i class="fas fa-play"></i></div>` : '';
+
+                // Content
+                let content = i.type.includes("image") ? 
+                    `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s4000" loading="lazy">` : 
+                    `<iframe src="https://drive.google.com/file/d/${id}/preview" style="pointer-events:none;"></iframe>`;
+
+                return `<div class="${cssClass}">
+                    ${content}
+                    ${icon}
+                </div>`;
+            }).join('');
+        }
+
+        // Filter Function
+        function filterType(type, btn) {
+            // Button Active State
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Filtering Data
+            let filtered = [];
+            if(type === 'All') filtered = masterData;
+            else if (type === 'Photos') filtered = masterData.filter(i => i.type.includes("image"));
+            else if (type === 'Videos') filtered = masterData.filter(i => i.type.includes("video"));
+            
+            render(filtered, type);
+        }
     </script>
 </body>
 </html>
