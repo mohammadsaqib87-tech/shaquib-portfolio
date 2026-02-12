@@ -44,7 +44,7 @@
         .item:active img { opacity: 0.7; }
         .vid-icon { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 12px; text-shadow: 0 0 4px rgba(0,0,0,0.8); }
 
-        /* SWIPE MODAL (GALLERY) */
+        /* FULL SCREEN SWIPE MODAL */
         #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 5000; align-items: center; justify-content: center;
@@ -54,13 +54,14 @@
         #modal-content img { width: 100%; height: auto; max-height: 90vh; object-fit: contain; }
         #modal-content iframe { width: 100%; height: 80vh; border: none; }
         
-        /* Navigation Arrows */
+        /* Nav Buttons */
         .nav-btn {
             position: absolute; top: 50%; transform: translateY(-50%);
-            color: rgba(255,255,255,0.7); font-size: 30px; background: rgba(0,0,0,0.3);
+            color: rgba(255,255,255,0.8); font-size: 35px; background: rgba(0,0,0,0.3);
             width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 5001; user-select: none;
+            cursor: pointer; z-index: 5001; user-select: none; transition: 0.2s;
         }
+        .nav-btn:active { background: rgba(255,255,255,0.2); transform: translateY(-50%) scale(0.9); }
         .prev-btn { left: 10px; }
         .next-btn { right: 10px; }
 
@@ -76,4 +77,175 @@
             border-top: 1px solid #1a1a1a; display: flex; justify-content: space-around; 
             padding: 12px 0 25px 0; z-index: 1000; 
         }
-        .nav-item { background: none
+        .nav-item { background: none; border: none; color: #666; font-size: 24px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #fff; transform: translateY(-2px); }
+        .nav-text { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
+        #loader { text-align: center; padding: 60px; color: #888; grid-column: 1 / -1; font-size: 12px; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div id="modal">
+        <div id="close-btn" onclick="closeModal()">&times;</div>
+        <div class="nav-btn prev-btn" onclick="changeMedia(-1)">&#10094;</div>
+        <div class="nav-btn next-btn" onclick="changeMedia(1)">&#10095;</div>
+        <div id="modal-content"></div>
+    </div>
+
+    <header>
+        <div class="profile-pic">
+            <img src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
+        </div>
+        <div class="info">
+            <h1>SHAQUIB VARANASI <i class="fas fa-certificate verified"></i></h1>
+            <div class="stats">
+                <span>∞</span> Memories Captured
+            </div>
+            <div class="bio">
+                <span class="bio-highlight">Cloud Server ☁️</span><br>
+                Official Archive • Est. 2026
+            </div>
+        </div>
+    </header>
+
+    <div class="grid" id="main-grid">
+        <div id="loader"><i class="fas fa-circle-notch fa-spin"></i> CONNECTING TO SATELLITE...</div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="filterType('All', this)">
+            <i class="fas fa-th"></i><span class="nav-text">ALL</span>
+        </button>
+        <button class="nav-item" onclick="filterType('Photos', this)">
+            <i class="far fa-image"></i><span class="nav-text">PHOTOS</span>
+        </button>
+        <button class="nav-item" onclick="filterType('Videos', this)">
+            <i class="fas fa-film"></i><span class="nav-text">VIDEOS</span>
+        </button>
+    </div>
+
+    <script>
+        const api = "https://script.google.com/macros/s/AKfycbySoqGHYF0Dxf8cOeCNHBsLZskTslawbOr9TTTGlVSwN5HheOwpZuRbjvFr3drskagCCw/exec";
+        let masterData = [];
+        let currentViewData = [];
+        let currentIndex = 0;
+
+        fetch(api).then(res => res.json()).then(data => {
+            masterData = data;
+            currentViewData = data;
+            document.getElementById("loader").style.display = "none";
+            render(data, 'All');
+        }).catch(e => {
+            document.getElementById("loader").innerHTML = "⚠️ SYSTEM OFFLINE";
+        });
+
+        function render(items, viewType) {
+            const grid = document.getElementById("main-grid");
+            if (items.length === 0) {
+                grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No photos found</div>";
+                return;
+            }
+
+            grid.innerHTML = items.map((i, index) => {
+                let id = "";
+                if (i.url.includes("/d/")) { id = i.url.split('/d/')[1].split('/')[0]; } 
+                else { id = i.url.split('id=')[1]; }
+                
+                let isVideo = i.type.includes("video");
+                let cssClass = (viewType === 'Videos') ? 'item video-mode' : 'item';
+                let icon = isVideo ? `<div class="vid-icon"><i class="fas fa-play"></i></div>` : '';
+
+                let content = i.type.includes("image") ? 
+                    `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s4000" loading="lazy">` : 
+                    `<iframe src="https://drive.google.com/file/d/${id}/preview"></iframe>`;
+
+                return `<div class="${cssClass}" onclick="openModal(${index})">
+                    ${content}
+                    ${icon}
+                </div>`;
+            }).join('');
+        }
+
+        // --- SWIPE & SCROLL LOGIC ---
+        function openModal(index) {
+            currentIndex = index;
+            const modal = document.getElementById('modal');
+            modal.style.display = 'flex';
+            showMedia(index);
+        }
+
+        function showMedia(index) {
+            const box = document.getElementById('modal-content');
+            if (!currentViewData[index]) return; // Safety check
+            
+            const item = currentViewData[index];
+            let id = "";
+            if (item.url.includes("/d/")) { id = item.url.split('/d/')[1].split('/')[0]; } 
+            else { id = item.url.split('id=')[1]; }
+
+            // Loader while switching
+            box.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="color:#fff; font-size:30px;"></i>';
+
+            if (item.type.includes("image")) {
+                // High Quality for Full Screen
+                box.innerHTML = `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s5000">`;
+            } else {
+                box.innerHTML = `<iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe>`;
+            }
+        }
+
+        function changeMedia(direction) {
+            currentIndex += direction;
+            if (currentIndex >= currentViewData.length) currentIndex = 0;
+            if (currentIndex < 0) currentIndex = currentViewData.length - 1;
+            showMedia(currentIndex);
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('modal-content').innerHTML = '';
+        }
+
+        // --- TOUCH SWIPE LOGIC ---
+        let touchstartX = 0;
+        let touchendX = 0;
+        
+        const modal = document.getElementById('modal');
+        modal.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        });
+
+        modal.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchendX < touchstartX - 50) changeMedia(1); // Left Swipe -> Next
+            if (touchendX > touchstartX + 50) changeMedia(-1); // Right Swipe -> Prev
+        }
+
+        // --- KEYBOARD SUPPORT ---
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('modal').style.display === 'flex') {
+                if (event.key === "ArrowLeft") changeMedia(-1);
+                if (event.key === "ArrowRight") changeMedia(1);
+                if (event.key === "Escape") closeModal();
+            }
+        });
+
+        function filterType(type, btn) {
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            let filtered = [];
+            if(type === 'All') filtered = masterData;
+            else if (type === 'Photos') filtered = masterData.filter(i => i.type.includes("image"));
+            else if (type === 'Videos') filtered = masterData.filter(i => i.type.includes("video"));
+            
+            currentViewData = filtered;
+            render(filtered, type);
+        }
+    </script>
+</body>
+</html>
