@@ -6,9 +6,7 @@
         // Fetch Data
         fetch(api).then(res => res.json()).then(data => {
             masterData = data;
-            // SPELLING FIXED: leader -> loader
             document.getElementById("loader").style.display = "none";
-            // SPELLING FIXED: randar -> render
             render(data, 'All');
         }).catch(e => {
             document.getElementById("loader").innerHTML = "⚠️ SYSTEM OFFLINE";
@@ -19,21 +17,27 @@
             const grid = document.getElementById("main-grid");
             
             if (items.length === 0) {
-                grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No photos found in folder</div>";
+                grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No photos found</div>";
                 return;
             }
 
             grid.innerHTML = items.map(i => {
-                // YE WALA LINE EKDAM SAHI HAI AB:
-                let id = i.url.split('/d/')[1].split('/')[0];
+                // ID NIKALNE KA SAHI TAREEKA
+                // Agar link me "/d/" hai to wahan se nikalo, nahi to "id=" se nikalo (Safety ke liye dono check)
+                let id = "";
+                if (i.url.includes("/d/")) {
+                    id = i.url.split('/d/')[1].split('/')[0];
+                } else {
+                    id = i.url.split('id=')[1];
+                }
                 
                 let isVideo = i.type.includes("video");
                 let cssClass = (viewType === 'Videos') ? 'item video-mode' : 'item';
                 let icon = isVideo ? `<div class="vid-icon"><i class="fas fa-play"></i></div>` : '';
 
-                // High Quality Image Link
+                // --- YAHAN CHANGE KIYA HAI (OLD RELIABLE LINK) ---
                 let content = i.type.includes("image") ? 
-                    `<img src="https://lh3.googleusercontent.com/d/${id}=s1000" loading="lazy">` : 
+                    `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s4000" loading="lazy">` : 
                     `<iframe src="https://drive.google.com/file/d/${id}/preview" style="pointer-events:none;"></iframe>`;
 
                 return `<div class="${cssClass}">
@@ -53,7 +57,6 @@
             else if (type === 'Photos') filtered = masterData.filter(i => i.type.includes("image"));
             else if (type === 'Videos') filtered = masterData.filter(i => i.type.includes("video"));
             
-            // SPELLING FIXED: randar -> render
             render(filtered, type);
         }
     </script>
