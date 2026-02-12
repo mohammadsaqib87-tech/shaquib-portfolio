@@ -22,23 +22,15 @@
         
         /* PROFILE PIC & STORY RING */
         .profile-pic-container { position: relative; flex-shrink: 0; cursor: pointer; }
-        
-        /* Gold Ring Animation */
         .story-ring {
             position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px;
             border-radius: 50%;
             background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            z-index: 1; display: none; /* Hidden if no stories */
+            z-index: 1; display: none;
             animation: spin 10s linear infinite;
         }
-
-        .profile-pic { 
-            width: 85px; height: 85px; border-radius: 50%; padding: 3px;
-            background: #000; position: relative; z-index: 2;
-        }
+        .profile-pic { width: 85px; height: 85px; border-radius: 50%; padding: 3px; background: #000; position: relative; z-index: 2; }
         .profile-pic img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #111; }
-        
-        /* Camera Icon */
         .edit-icon {
             position: absolute; bottom: 0; right: 0;
             background: var(--gold); color: #000; width: 26px; height: 26px;
@@ -61,42 +53,24 @@
         img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .vid-icon { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 12px; text-shadow: 0 0 4px rgba(0,0,0,0.8); }
 
-        /* STORY VIEWER MODAL */
-        #story-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 6000; flex-direction: column;
-        }
-        .story-progress-bar {
-            width: 100%; height: 3px; background: rgba(255,255,255,0.3);
-            position: absolute; top: 10px; z-index: 6001; display: flex; gap: 5px; padding: 0 5px;
-        }
+        /* MODALS */
+        #story-modal { display: none; position: fixed; inset: 0; background: #000; z-index: 6000; flex-direction: column; }
+        .story-progress-bar { width: 100%; height: 3px; background: rgba(255,255,255,0.3); position: absolute; top: 10px; z-index: 6001; display: flex; gap: 5px; padding: 0 5px; }
         .progress-segment { height: 100%; flex: 1; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
         .progress-fill { height: 100%; background: #fff; width: 0%; }
-        
         #story-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         #story-content img { width: 100%; height: 100%; object-fit: contain; }
         #story-content video { width: 100%; height: auto; max-height: 90vh; }
-
         .story-nav { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 6002; }
-        .story-left { left: 0; }
-        .story-right { right: 0; }
+        .story-left { left: 0; } .story-right { right: 0; }
         #close-story { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 24px; z-index: 6003; cursor: pointer; }
 
-        /* GALLERY MODAL */
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; align-items: center; justify-content: center; flex-direction: column; }
+        #modal { display: none; position: fixed; inset: 0; background: #000; z-index: 5000; align-items: center; justify-content: center; flex-direction: column; }
         #modal-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; flex-direction: column; }
         #modal-content img { width: 100%; height: auto; max-height: 90vh; object-fit: contain; }
         .video-wrapper { width: 100%; height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .video-wrapper iframe { width: 100%; height: 100%; border: none; z-index: 5; }
-        
-        .hd-btn {
-            margin-top: 15px; padding: 12px 24px; background: #fff; 
-            border: none; color: #000; border-radius: 25px;
-            font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;
-            transition: 0.2s; z-index: 5003; box-shadow: 0 0 15px rgba(255,255,255,0.3); text-decoration: none;
-        }
-        .hd-btn:active { transform: scale(0.95); background: var(--gold); }
-
+        .hd-btn { margin-top: 15px; padding: 12px 24px; background: #fff; border: none; color: #000; border-radius: 25px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; z-index: 5003; box-shadow: 0 0 15px rgba(255,255,255,0.3); text-decoration: none; }
         .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.8); font-size: 35px; background: rgba(0,0,0,0.3); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5001; }
         .prev-btn { left: 10px; } .next-btn { right: 10px; }
         #close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 30px; z-index: 5002; cursor: pointer; }
@@ -107,9 +81,14 @@
         .nav-item.active { color: #fff; transform: translateY(-2px); }
         .nav-text { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
         #loader { text-align: center; padding: 60px; color: #888; grid-column: 1 / -1; font-size: 12px; letter-spacing: 1px; }
+
+        /* NEW: UPLOAD OVERLAY */
+        #upload-status { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 10px 25px; border-radius: 30px; font-weight: bold; z-index: 9999; box-shadow: 0 0 20px rgba(212,175,55,0.4); font-size: 13px; }
     </style>
 </head>
 <body>
+
+    <div id="upload-status">🚀 UPLOADING TO CLOUD...</div>
 
     <div id="story-modal">
         <div class="story-progress-bar" id="story-progress"></div>
@@ -133,7 +112,7 @@
                 <img id="profile-image" src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
             </div>
             <input type="file" id="profile-upload" accept="image/*" style="display: none;">
-            <div class="edit-icon" onclick="event.stopPropagation(); checkPermission()"><i class="fas fa-camera"></i></div>
+            <div class="edit-icon" onclick="event.stopPropagation(); checkPermission('profile')"><i class="fas fa-camera"></i></div>
         </div>
         <div class="info">
             <h1>SHAQUIB VARANASI <i class="fas fa-certificate verified"></i></h1>
@@ -150,9 +129,11 @@
         <button class="nav-item active" onclick="filterType('All', this)">
             <i class="fas fa-th"></i><span class="nav-text">ALL</span>
         </button>
-        <button class="nav-item" onclick="filterType('Photos', this)">
-            <i class="far fa-image"></i><span class="nav-text">PHOTOS</span>
+        <button class="nav-item" onclick="checkPermission('gallery')">
+            <i class="fas fa-plus-circle" style="color:var(--gold)"></i><span class="nav-text" style="color:var(--gold)">UPLOAD</span>
         </button>
+        <input type="file" id="gallery-upload" style="display:none" onchange="handleAdminUpload(event)">
+        
         <button class="nav-item" onclick="filterType('Videos', this)">
             <i class="fas fa-film"></i><span class="nav-text">VIDEOS</span>
         </button>
@@ -173,70 +154,82 @@
         const savedProfilePic = localStorage.getItem("shaquibProfilePic");
         if (savedProfilePic) document.getElementById("profile-image").src = savedProfilePic;
 
-        function checkPermission() {
-            if (prompt("🔐 Enter PIN:") === "4881") document.getElementById('profile-upload').click();
-            else alert("❌ Wrong PIN!");
+        function checkPermission(type) {
+            if (prompt("🔐 Enter PIN:") === "4881") {
+                if(type === 'profile') document.getElementById('profile-upload').click();
+                else document.getElementById('gallery-upload').click();
+            } else {
+                alert("❌ Wrong PIN!");
+            }
         }
 
+        // DP Upload Logic
         document.getElementById('profile-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const img = document.getElementById("profile-image");
-            img.style.opacity = '0.5'; 
+            const file = e.target.files[0]; if (!file) return;
+            uploadFile(file, true);
+        });
+
+        // Gallery Upload Logic
+        function handleAdminUpload(event) {
+            const file = event.target.files[0]; if (!file) return;
+            uploadFile(file, false);
+        }
+
+        // COMMON UPLOAD FUNCTION
+        function uploadFile(file, isDP) {
+            const status = document.getElementById('upload-status');
+            status.style.display = 'block';
+            
             const reader = new FileReader();
             reader.onload = function(event) {
                 fetch(api, {
-                    method: 'POST', body: JSON.stringify({ base64: event.target.result.split(',')[1], mimeType: file.type })
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        base64: event.target.result.split(',')[1], 
+                        mimeType: file.type,
+                        name: file.name
+                    })
                 }).then(res => res.json()).then(data => {
+                    status.style.display = 'none';
                     if (data.status === "success") {
-                        const newUrl = `https://drive.google.com/uc?export=view&id=${data.url.split('/d/')[1].split('/')[0]}`;
-                        img.src = newUrl; img.style.opacity = '1';
-                        localStorage.setItem("shaquibProfilePic", newUrl);
-                        alert("Updated! 🎉");
+                        if(isDP) {
+                            const newUrl = `https://drive.google.com/uc?export=view&id=${data.url.split('/d/')[1].split('/')[0]}`;
+                            document.getElementById("profile-image").src = newUrl;
+                            localStorage.setItem("shaquibProfilePic", newUrl);
+                        } else {
+                            alert("✅ Upload Success! Cloud updated.");
+                            location.reload(); 
+                        }
                     }
-                }).catch(err => { alert("Error"); img.style.opacity = '1'; });
+                }).catch(err => { alert("Error"); status.style.display = 'none'; });
             };
             reader.readAsDataURL(file);
-        });
+        }
 
-        // 2. FETCH DATA & SEPARATE 'Storyupdates'
+        // 2. FETCH DATA
         fetch(api).then(res => res.json()).then(data => {
             masterData = data;
-            
-            // --- FILTER: LOOK FOR 'Storyupdates' FOLDER ---
             storyData = data.filter(i => i.folder === "Storyupdates");
-            
-            // --- FILTER: EVERYTHING ELSE IS GALLERY ---
             galleryData = data.filter(i => i.folder !== "Storyupdates");
-            
             currentViewData = galleryData; 
-            
-            // Show Story Ring if stories exist
-            if (storyData.length > 0) {
-                document.getElementById('story-ring').style.display = 'block';
-            }
-
+            if (storyData.length > 0) document.getElementById('story-ring').style.display = 'block';
             document.getElementById("loader").style.display = "none";
             render(galleryData, 'All');
         }).catch(e => {
             document.getElementById("loader").innerHTML = "⚠️ CHECK INTERNET";
         });
 
-        // 3. STORY SYSTEM LOGIC
+        // 3. STORY SYSTEM
         function openStory() {
             if (storyData.length === 0) return; 
-            
             currentStoryIndex = 0;
             document.getElementById('story-modal').style.display = 'flex';
             playStory(0);
         }
-
         function playStory(index) {
             if (index >= storyData.length) { closeStory(); return; }
             if (index < 0) index = 0;
             currentStoryIndex = index;
-
-            // Progress Bars
             const barContainer = document.getElementById('story-progress');
             barContainer.innerHTML = '';
             storyData.forEach((_, i) => {
@@ -244,21 +237,14 @@
                 if (i === index) fillWidth = '0%'; 
                 barContainer.innerHTML += `<div class="progress-segment"><div class="progress-fill" id="fill-${i}" style="width:${fillWidth}"></div></div>`;
             });
-
             const item = storyData[index];
             const box = document.getElementById('story-content');
             let id = item.url.includes("/d/") ? item.url.split('/d/')[1].split('/')[0] : item.url.split('id=')[1];
-
             box.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="color:#fff; font-size:30px;"></i>';
-
-            // Load Content
             if (item.type.includes("image")) {
                 let img = new Image();
                 img.src = `https://drive.google.com/thumbnail?id=${id}&sz=s0`;
-                img.onload = () => { 
-                    box.innerHTML = ''; box.appendChild(img); 
-                    startTimer(5000, index); // 5 sec
-                };
+                img.onload = () => { box.innerHTML = ''; box.appendChild(img); startTimer(5000, index); };
             } else {
                 box.innerHTML = `<video autoplay playsinline src="https://drive.google.com/uc?export=download&id=${id}" style="width:100%"></video>`;
                 const vid = box.querySelector('video');
@@ -266,88 +252,48 @@
                 vid.onerror = () => nextStory();
             }
         }
-
         function startTimer(duration, index) {
-            clearTimeout(storyTimer);
-            const fill = document.getElementById(`fill-${index}`);
-            fill.style.transition = `width ${duration}ms linear`;
-            setTimeout(() => { fill.style.width = '100%'; }, 50);
-
+            clearTimeout(storyTimer); const fill = document.getElementById(`fill-${index}`);
+            fill.style.transition = `width ${duration}ms linear`; setTimeout(() => { fill.style.width = '100%'; }, 50);
             storyTimer = setTimeout(() => { nextStory(); }, duration);
         }
-
         function nextStory() { clearTimeout(storyTimer); playStory(currentStoryIndex + 1); }
         function prevStory() { clearTimeout(storyTimer); if (currentStoryIndex !== 0) playStory(currentStoryIndex - 1); }
-
-        function closeStory() {
-            clearTimeout(storyTimer);
-            document.getElementById('story-modal').style.display = 'none';
-            document.getElementById('story-content').innerHTML = '';
-        }
+        function closeStory() { clearTimeout(storyTimer); document.getElementById('story-modal').style.display = 'none'; document.getElementById('story-content').innerHTML = ''; }
 
         // 4. GALLERY LOGIC
         function render(items, viewType) {
             const grid = document.getElementById("main-grid");
-            if (items.length === 0) {
-                grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No items</div>";
-                return;
-            }
+            if (items.length === 0) { grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No items</div>"; return; }
             grid.innerHTML = items.map((i, index) => {
                 let id = i.url.includes("/d/") ? i.url.split('/d/')[1].split('/')[0] : i.url.split('id=')[1];
                 let isVideo = i.type.includes("video");
                 let cssClass = (viewType === 'Videos') ? 'item video-mode' : 'item';
                 let icon = isVideo ? `<div class="vid-icon"><i class="fas fa-play"></i></div>` : '';
-                return `<div class="${cssClass}" onclick="openModal(${index})">
-                    <img src="https://drive.google.com/thumbnail?id=${id}&sz=s400" loading="lazy">
-                    ${icon}
-                </div>`;
+                return `<div class="${cssClass}" onclick="openModal(${index})"><img src="https://drive.google.com/thumbnail?id=${id}&sz=s400" loading="lazy">${icon}</div>`;
             }).join('');
         }
-
-        function openModal(index) {
-            currentIndex = index;
-            document.getElementById('modal').style.display = 'flex';
-            showMedia(index);
-        }
-
+        function openModal(index) { currentIndex = index; document.getElementById('modal').style.display = 'flex'; showMedia(index); }
         function showMedia(index) {
             const box = document.getElementById('modal-content');
             if (!currentViewData[index]) return;
             const item = currentViewData[index];
             let id = item.url.includes("/d/") ? item.url.split('/d/')[1].split('/')[0] : item.url.split('id=')[1];
-
             box.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="color:#fff; font-size:30px;"></i>';
-
             if (item.type.includes("image")) {
-                let img = new Image();
-                img.src = `https://drive.google.com/thumbnail?id=${id}&sz=s0`;
+                let img = new Image(); img.src = `https://drive.google.com/thumbnail?id=${id}&sz=s0`;
                 img.onload = () => { box.innerHTML = ''; box.appendChild(img); };
             } else {
-                box.innerHTML = `
-                    <div class="video-wrapper"><iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe></div>
-                    <a class="hd-btn" href="https://drive.google.com/file/d/${id}/view" target="_blank"><i class="fas fa-download"></i> PLAY FULL HD & DOWNLOAD</a>
-                `;
+                box.innerHTML = `<div class="video-wrapper"><iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe></div><a class="hd-btn" href="https://drive.google.com/file/d/${id}/view" target="_blank"><i class="fas fa-download"></i> PLAY FULL HD & DOWNLOAD</a>`;
             }
         }
-
-        function changeMedia(direction) {
-            currentIndex += direction;
-            if (currentIndex >= currentViewData.length) currentIndex = 0;
-            if (currentIndex < 0) currentIndex = currentViewData.length - 1;
-            showMedia(currentIndex);
-        }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('modal-content').innerHTML = '';
-        }
-
+        function changeMedia(direction) { currentIndex += direction; if (currentIndex >= currentViewData.length) currentIndex = 0; if (currentIndex < 0) currentIndex = currentViewData.length - 1; showMedia(currentIndex); }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('modal-content').innerHTML = ''; }
         function filterType(type, btn) {
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             let filtered = type === 'All' ? galleryData : galleryData.filter(i => i.type.includes(type === 'Photos' ? 'image' : 'video'));
-            currentViewData = filtered;
-            render(filtered, type);
+            currentViewData = filtered; render(filtered, type);
         }
     </script>
 </body>
