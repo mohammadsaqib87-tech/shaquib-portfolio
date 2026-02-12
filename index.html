@@ -13,70 +13,71 @@
         
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 80px; }
 
-        /* --- HEADER (ROYAL STYLE) --- */
+        /* HEADER */
         header { 
             padding: 20px; display: flex; align-items: center; gap: 20px; 
             position: sticky; top: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); 
             z-index: 100; border-bottom: 1px solid #1a1a1a; 
         }
-        
         .profile-pic { 
             width: 85px; height: 85px; border-radius: 50%; padding: 3px;
-            /* Gold Gradient Border */
             background: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C); 
             flex-shrink: 0;
         }
         .profile-pic img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; background: #111; }
-        
         .info { flex: 1; }
         .info h1 { 
-            font-family: 'Cinzel', serif; /* The Royal Font */
-            font-size: 20px; margin: 0; display: flex; align-items: center; gap: 6px; 
-            letter-spacing: 0.5px;
-            background: linear-gradient(to right, #fff, #e0e0e0);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-family: 'Cinzel', serif; font-size: 20px; margin: 0; display: flex; align-items: center; gap: 6px; 
+            background: linear-gradient(to right, #fff, #e0e0e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        
         .verified { color: #0095f6; font-size: 14px; margin-top: 2px; }
-        
         .stats { margin-top: 8px; color: #aaa; font-size: 13px; display: flex; gap: 15px; }
         .stats span { color: #fff; font-weight: 600; }
-        
         .bio { color: #dbdbdb; font-size: 13px; margin-top: 8px; line-height: 1.4; }
         .bio-highlight { color: var(--gold); font-weight: 600; }
 
-        /* --- GALLERY GRID --- */
+        /* GRID */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 2px; }
-        
         .item { position: relative; background: var(--gray); overflow: hidden; aspect-ratio: 1/1; cursor: pointer; }
-        
-        /* Video Mode (Reels Look - Taller) */
         .item.video-mode { aspect-ratio: 9/16; } 
-
-        img, iframe { width: 100%; height: 100%; object-fit: cover; border: none; display: block; transition: opacity 0.3s; }
+        img, iframe { width: 100%; height: 100%; object-fit: cover; border: none; display: block; pointer-events: none; }
         .item:active img { opacity: 0.7; }
-        
-        /* Video Icon Overlay */
         .vid-icon { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 12px; text-shadow: 0 0 4px rgba(0,0,0,0.8); }
 
-        /* --- BOTTOM NAVIGATION (APP FEEL) --- */
+        /* FULL SCREEN MODAL (ZOOM VIEW) */
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 5000; align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+        #modal-content { width: 100%; max-height: 80vh; display: flex; justify-content: center; }
+        #modal-content img { width: auto; max-width: 100%; max-height: 80vh; object-fit: contain; pointer-events: auto; }
+        #modal-content iframe { width: 100%; height: 50vh; border: none; pointer-events: auto; }
+        
+        #close-btn {
+            position: absolute; top: 20px; right: 20px; color: #fff; font-size: 30px; 
+            background: rgba(0,0,0,0.5); width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+
+        /* BOTTOM NAV */
         .bottom-nav { 
             position: fixed; bottom: 0; width: 100%; background: #000; 
             border-top: 1px solid #1a1a1a; display: flex; justify-content: space-around; 
             padding: 12px 0 25px 0; z-index: 1000; 
         }
-        .nav-item { 
-            background: none; border: none; color: #666; font-size: 24px; 
-            cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; 
-        }
+        .nav-item { background: none; border: none; color: #666; font-size: 24px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #fff; transform: translateY(-2px); }
         .nav-text { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
-
-        /* Loading Animation */
         #loader { text-align: center; padding: 60px; color: #666; grid-column: 1 / -1; font-size: 12px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
+
+    <div id="modal">
+        <div id="close-btn" onclick="closeModal()">&times;</div>
+        <div id="modal-content"></div>
+    </div>
 
     <header>
         <div class="profile-pic">
@@ -100,25 +101,20 @@
 
     <div class="bottom-nav">
         <button class="nav-item active" onclick="filterType('All', this)">
-            <i class="fas fa-th"></i>
-            <span class="nav-text">ALL</span>
+            <i class="fas fa-th"></i><span class="nav-text">ALL</span>
         </button>
         <button class="nav-item" onclick="filterType('Photos', this)">
-            <i class="far fa-image"></i>
-            <span class="nav-text">PHOTOS</span>
+            <i class="far fa-image"></i><span class="nav-text">PHOTOS</span>
         </button>
         <button class="nav-item" onclick="filterType('Videos', this)">
-            <i class="fas fa-film"></i>
-            <span class="nav-text">VIDEOS</span>
+            <i class="fas fa-film"></i><span class="nav-text">VIDEOS</span>
         </button>
     </div>
 
     <script>
-        // TERA FINAL SCRIPT URL
         const api = "https://script.google.com/macros/s/AKfycbySoqGHYF0Dxf8cOeCNHBsLZskTslawbOr9TTTGlVSwN5HheOwpZuRbjvFr3drskagCCw/exec";
         let masterData = [];
 
-        // Fetch Data
         fetch(api).then(res => res.json()).then(data => {
             masterData = data;
             document.getElementById("loader").style.display = "none";
@@ -127,10 +123,8 @@
             document.getElementById("loader").innerHTML = "⚠️ SYSTEM OFFLINE";
         });
 
-        // Render Function
         function render(items, viewType) {
             const grid = document.getElementById("main-grid");
-            
             if (items.length === 0) {
                 grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No photos found</div>";
                 return;
@@ -138,38 +132,57 @@
 
             grid.innerHTML = items.map(i => {
                 let id = "";
-                if (i.url.includes("/d/")) {
-                    id = i.url.split('/d/')[1].split('/')[0];
-                } else {
-                    id = i.url.split('id=')[1];
-                }
+                if (i.url.includes("/d/")) { id = i.url.split('/d/')[1].split('/')[0]; } 
+                else { id = i.url.split('id=')[1]; }
                 
                 let isVideo = i.type.includes("video");
                 let cssClass = (viewType === 'Videos') ? 'item video-mode' : 'item';
                 let icon = isVideo ? `<div class="vid-icon"><i class="fas fa-play"></i></div>` : '';
 
-                // RELIABLE LINK
+                // Thumbnail content
                 let content = i.type.includes("image") ? 
                     `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s4000" loading="lazy">` : 
-                    `<iframe src="https://drive.google.com/file/d/${id}/preview" style="pointer-events:none;"></iframe>`;
+                    `<iframe src="https://drive.google.com/file/d/${id}/preview"></iframe>`;
 
-                return `<div class="${cssClass}">
+                // Add Click Event to Open Modal
+                return `<div class="${cssClass}" onclick="openModal('${id}', '${isVideo ? 'vid' : 'img'}')">
                     ${content}
                     ${icon}
                 </div>`;
             }).join('');
         }
 
-        // Filter Function
+        // --- NEW MODAL FUNCTIONS ---
+        function openModal(id, type) {
+            const modal = document.getElementById('modal');
+            const box = document.getElementById('modal-content');
+            
+            modal.style.display = 'flex';
+            box.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="color:#fff; font-size:30px;"></i>'; // Loading
+
+            if (type === 'img') {
+                // Load High Quality Image
+                box.innerHTML = `<img src="https://drive.google.com/thumbnail?id=${id}&sz=s5000">`;
+            } else {
+                // Load Video Player
+                box.innerHTML = `<iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe>`;
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            const box = document.getElementById('modal-content');
+            modal.style.display = 'none';
+            box.innerHTML = ''; // Stop video audio
+        }
+
         function filterType(type, btn) {
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
             let filtered = [];
             if(type === 'All') filtered = masterData;
             else if (type === 'Photos') filtered = masterData.filter(i => i.type.includes("image"));
             else if (type === 'Videos') filtered = masterData.filter(i => i.type.includes("video"));
-            
             render(filtered, type);
         }
     </script>
