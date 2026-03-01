@@ -35,13 +35,6 @@
             background: #000; position: relative; z-index: 2;
         }
         .profile-pic img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #111; }
-        
-        .edit-icon {
-            position: absolute; bottom: 0; right: 0;
-            background: var(--gold); color: #000; width: 26px; height: 26px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 14px; cursor: pointer; border: 2px solid #000; z-index: 10;
-        }
 
         .info { flex: 1; }
         .info h1 { font-family: 'Cinzel', serif; font-size: 20px; margin: 0; display: flex; align-items: center; gap: 6px; background: linear-gradient(to right, #fff, #e0e0e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -114,8 +107,6 @@
             <div class="profile-pic">
                 <img id="profile-image" src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
             </div>
-            <input type="file" id="profile-upload" accept="image/*" style="display: none;">
-            <div class="edit-icon" onclick="event.stopPropagation(); checkPermission()"><i class="fas fa-camera"></i></div>
         </div>
         <div class="info">
             <h1>SHAQUIB VARANASI <i class="fas fa-certificate verified"></i></h1>
@@ -147,7 +138,6 @@
     </div>
 
     <script>
-        // 🚀 YAHI HAI TERA ASLI API LINK JO MAINE SET KAR DIYA HAI
         const api = "https://script.google.com/macros/s/AKfycbyS2Pnqv2XDaDL5Nxl_5qeQ3qdoVAgbV2mtPDCYXoC8sVR6jm0ztZ4hYYqzAocA5vYJSQ/exec";
         
         let masterData = [];
@@ -157,36 +147,6 @@
         let currentIndex = 0;
         let currentStoryIndex = 0;
         let storyTimer;
-
-        // PROFILE PHOTO LOGIC
-        const savedProfilePic = localStorage.getItem("shaquibProfilePic");
-        if (savedProfilePic) document.getElementById("profile-image").src = savedProfilePic;
-
-        function checkPermission() {
-            if (prompt("🔐 Enter PIN:") === "4881") document.getElementById('profile-upload').click();
-            else alert("❌ Wrong PIN!");
-        }
-
-        document.getElementById('profile-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const img = document.getElementById("profile-image");
-            img.style.opacity = '0.5'; 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                fetch(api, {
-                    method: 'POST', body: JSON.stringify({ base64: event.target.result.split(',')[1], mimeType: file.type })
-                }).then(res => res.json()).then(data => {
-                    if (data.status === "success") {
-                        const newUrl = `https://drive.google.com/uc?export=view&id=${data.url.split('/d/')[1].split('/')[0]}`;
-                        img.src = newUrl; img.style.opacity = '1';
-                        localStorage.setItem("shaquibProfilePic", newUrl);
-                        alert("Updated! 🎉");
-                    }
-                }).catch(err => { alert("Error"); img.style.opacity = '1'; });
-            };
-            reader.readAsDataURL(file);
-        });
 
         // 🚀 POST UPLOAD LOGIC
         function checkPostPermission() {
@@ -201,23 +161,29 @@
             const file = e.target.files[0];
             if (!file) return;
             
+            // File size check (Google Script limit bypass alert)
+            if (file.size > 8 * 1024 * 1024) {
+                alert("Bhai photo/video 8MB se badi hai! Google Drive hang ho jayega. Choti file daal.");
+                return;
+            }
+
             document.getElementById("main-grid").innerHTML = `<div id="loader" style="color:var(--gold);"><i class="fas fa-circle-notch fa-spin fa-2x"></i><br><br>UPLOADING TO VAULT...</div>`;
 
             const reader = new FileReader();
             reader.onload = function(event) {
                 fetch(api, {
                     method: 'POST', 
-                    body: JSON.stringify({ base64: event.target.result.split(',')[1], mimeType: file.type, filename: file.name })
+                    body: JSON.stringify({ base64: event.target.result.split(',')[1], mimeType: file.type })
                 }).then(res => res.json()).then(data => {
                     if (data.status === "success") {
                         alert("Post Uploaded Successfully! 🚀");
                         location.reload(); 
                     } else {
-                        alert("Error uploading. Check Google Script permissions.");
+                        alert("Error uploading. Google Script se panga ho gaya.");
                         location.reload();
                     }
                 }).catch(err => { 
-                    alert("Network Error!"); 
+                    alert("Network Error ya file bahut badi hai!"); 
                     location.reload(); 
                 });
             };
