@@ -36,14 +36,6 @@
         }
         .profile-pic img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #111; }
 
-        /* WAPAS AAGAYA TERA CAMERA ICON! 📸 */
-        .edit-icon {
-            position: absolute; bottom: 0; right: 0;
-            background: var(--gold); color: #000; width: 26px; height: 26px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 14px; cursor: pointer; border: 2px solid #000; z-index: 10;
-        }
-
         .info { flex: 1; }
         .info h1 { font-family: 'Cinzel', serif; font-size: 20px; margin: 0; display: flex; align-items: center; gap: 6px; background: linear-gradient(to right, #fff, #e0e0e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .verified { color: #0095f6; font-size: 14px; margin-top: 2px; }
@@ -81,12 +73,11 @@
         .prev-btn { left: 10px; } .next-btn { right: 10px; }
         #close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 30px; z-index: 5002; cursor: pointer; }
 
-        /* BOTTOM NAV */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0 25px 0; z-index: 1000; }
-        .nav-item { background: none; border: none; color: #666; font-size: 24px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        /* BOTTOM NAV - Clean & Centered (3 options only) */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #1a1a1a; display: flex; justify-content: space-around; padding: 15px 0 25px 0; z-index: 1000; }
+        .nav-item { background: none; border: none; color: #666; font-size: 22px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .nav-item.active { color: #fff; transform: translateY(-2px); }
-        .nav-text { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
-        .upload-btn { color: var(--gold) !important; transform: scale(1.1); }
+        .nav-text { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
         
         #loader { text-align: center; padding: 60px; color: #888; grid-column: 1 / -1; font-size: 12px; letter-spacing: 1px; }
     </style>
@@ -114,10 +105,6 @@
             <div class="profile-pic">
                 <img id="profile-image" src="https://ui-avatars.com/api/?name=S+V&background=000&color=D4AF37&font-size=0.45&bold=true" alt="Profile">
             </div>
-            
-            <input type="file" id="secret-upload" accept="image/*,video/*" style="display: none;">
-            
-            <div class="edit-icon" onclick="event.stopPropagation(); triggerHackUpload()"><i class="fas fa-camera"></i></div>
         </div>
         <div class="info">
             <h1>SHAQUIB VARANASI <i class="fas fa-certificate verified"></i></h1>
@@ -127,7 +114,7 @@
     </header>
 
     <div class="grid" id="main-grid">
-        <div id="loader"><i class="fas fa-circle-notch fa-spin"></i> CONNECTING...</div>
+        <div id="loader"><i class="fas fa-circle-notch fa-spin"></i> CONNECTING TO VAULT...</div>
     </div>
 
     <div class="bottom-nav">
@@ -137,11 +124,6 @@
         <button class="nav-item" onclick="filterType('Photos', this)">
             <i class="far fa-image"></i><span class="nav-text">PHOTOS</span>
         </button>
-        
-        <button class="nav-item upload-btn" onclick="triggerHackUpload()">
-            <i class="far fa-plus-square"></i><span class="nav-text" style="color:#888;">UPLOAD</span>
-        </button>
-
         <button class="nav-item" onclick="filterType('Videos', this)">
             <i class="fas fa-film"></i><span class="nav-text">VIDEOS</span>
         </button>
@@ -158,54 +140,7 @@
         let currentStoryIndex = 0;
         let storyTimer;
 
-        // ==========================================
-        // 🚀 MASTER HACK UPLOAD LOGIC (FOOLS THE BACKEND)
-        // ==========================================
-        function triggerHackUpload() {
-            if (prompt("🔐 Enter PIN:") === "4881") {
-                document.getElementById('secret-upload').click();
-            } else {
-                alert("❌ Wrong PIN!");
-            }
-        }
-
-        document.getElementById('secret-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Choti limit taaki hang na ho
-            if (file.size > 8 * 1024 * 1024) {
-                alert("Bhai 8MB se badi file mat daal, script hang ho jayega!");
-                return;
-            }
-            
-            document.getElementById("main-grid").innerHTML = `<div id="loader" style="color:var(--gold);"><i class="fas fa-circle-notch fa-spin fa-2x"></i><br><br>BYPASSING BACKEND & UPLOADING...</div>`;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                // TERA ORIGINAL DP WALA PAYLOAD (Backend ko lagega DP aa rahi hai)
-                fetch(api, {
-                    method: 'POST', 
-                    body: JSON.stringify({ base64: event.target.result.split(',')[1], mimeType: file.type })
-                }).then(res => res.json()).then(data => {
-                    if (data.status === "success") {
-                        alert("Bhai tera jugaad kaam kar gaya! Photo seedha Vault me chali gayi 🌚🚀");
-                        location.reload(); // Page refresh karega toh feed me photo aa jayegi!
-                    } else {
-                        alert("Error aagaya bhai. Script allow nahi kar raha.");
-                        location.reload();
-                    }
-                }).catch(err => { 
-                    alert("Network Error!"); 
-                    location.reload(); 
-                });
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // ==========================================
-        // FETCH DATA & GALLERY LOGIC
-        // ==========================================
+        // FETCH DATA (SIRF DATA KHEENCHNE KA KAAM)
         fetch(api).then(res => res.json()).then(data => {
             masterData = data;
             storyData = data.filter(i => i.folder === "Storyupdates");
@@ -215,7 +150,7 @@
             document.getElementById("loader").style.display = "none";
             render(galleryData, 'All');
         }).catch(e => {
-            document.getElementById("loader").innerHTML = "⚠️ CHECK INTERNET";
+            document.getElementById("loader").innerHTML = "⚠️ NETWORK ERROR";
         });
 
         function openStory() {
@@ -258,7 +193,7 @@
 
         function render(items, viewType) {
             const grid = document.getElementById("main-grid");
-            if (items.length === 0) { grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No items</div>"; return; }
+            if (items.length === 0) { grid.innerHTML = "<div style='color:#666; text-align:center; width:100%; grid-column:1/-1; padding:20px;'>No items found in Vault</div>"; return; }
             grid.innerHTML = items.map((i, index) => {
                 let id = i.url.includes("/d/") ? i.url.split('/d/')[1].split('/')[0] : i.url.split('id=')[1];
                 let isVideo = i.type.includes("video");
