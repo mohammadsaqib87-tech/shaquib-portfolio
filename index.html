@@ -85,6 +85,9 @@
         .nav-item { background: none; border: none; color: #666; font-size: 24px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #fff; transform: translateY(-2px); }
         .nav-text { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
+        
+        .upload-btn { color: var(--gold) !important; transform: scale(1.1); }
+        
         #loader { text-align: center; padding: 60px; color: #888; grid-column: 1 / -1; font-size: 12px; letter-spacing: 1px; }
     </style>
 </head>
@@ -132,12 +135,19 @@
         <button class="nav-item" onclick="filterType('Photos', this)">
             <i class="far fa-image"></i><span class="nav-text">PHOTOS</span>
         </button>
+        
+        <button class="nav-item upload-btn" onclick="checkPostPermission()">
+            <i class="far fa-plus-square"></i><span class="nav-text" style="color:#888;">UPLOAD</span>
+        </button>
+        <input type="file" id="post-upload" accept="image/*,video/*" style="display: none;">
+
         <button class="nav-item" onclick="filterType('Videos', this)">
             <i class="fas fa-film"></i><span class="nav-text">VIDEOS</span>
         </button>
     </div>
 
     <script>
+        // 🚀 YAHI HAI TERA ASLI API LINK JO MAINE SET KAR DIYA HAI
         const api = "https://script.google.com/macros/s/AKfycbyS2Pnqv2XDaDL5Nxl_5qeQ3qdoVAgbV2mtPDCYXoC8sVR6jm0ztZ4hYYqzAocA5vYJSQ/exec";
         
         let masterData = [];
@@ -174,6 +184,42 @@
                         alert("Updated! 🎉");
                     }
                 }).catch(err => { alert("Error"); img.style.opacity = '1'; });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // 🚀 POST UPLOAD LOGIC
+        function checkPostPermission() {
+            if (prompt("🔐 Enter Admin PIN to Upload Post:") === "4881") {
+                document.getElementById('post-upload').click();
+            } else {
+                alert("❌ Aukaat me reh bhai! Wrong PIN.");
+            }
+        }
+
+        document.getElementById('post-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            document.getElementById("main-grid").innerHTML = `<div id="loader" style="color:var(--gold);"><i class="fas fa-circle-notch fa-spin fa-2x"></i><br><br>UPLOADING TO VAULT...</div>`;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                fetch(api, {
+                    method: 'POST', 
+                    body: JSON.stringify({ base64: event.target.result.split(',')[1], mimeType: file.type, filename: file.name })
+                }).then(res => res.json()).then(data => {
+                    if (data.status === "success") {
+                        alert("Post Uploaded Successfully! 🚀");
+                        location.reload(); 
+                    } else {
+                        alert("Error uploading. Check Google Script permissions.");
+                        location.reload();
+                    }
+                }).catch(err => { 
+                    alert("Network Error!"); 
+                    location.reload(); 
+                });
             };
             reader.readAsDataURL(file);
         });
